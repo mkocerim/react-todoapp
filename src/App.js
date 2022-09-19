@@ -54,8 +54,8 @@ function App() {
          placeholder="Type your Todo" 
          onChange={(event)=>setTodoText(event.target.value)}
       />
-         <button className="btn btn-primary" 
-         type="submit">
+         <button className="btn btn-primary" type="submit"
+         >
           ADD
         </button>
         </div>
@@ -78,7 +78,7 @@ function App() {
               </button>
           </div>
         )))
-
+      }
      </React.Fragment>
     )}
     </div>
