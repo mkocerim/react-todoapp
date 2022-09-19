@@ -67,17 +67,20 @@ function App() {
         (
      <React.Fragment>
       {
-        todos.map(item =>(
-          <div className="alert alert-secondary d-flex justify-content-between align-items-center" role="alert">
+        todos.map((item =>(
+          <div className="alert alert-secondary d-flex justify-content-between align-items-center" role="alert" >
             <p>{item.text}</p>
-            <button onClick={()=>changeISDone(item.id)} className="btn btn-secondary btn-sm">{item.isDone===false ? "Done":"Undone"}</button>
+            <button 
+            onClick={()=>changeISDone(item.id)} 
+            className="btn btn-secondary btn-sm"
+            >
+              {item.isDone === false ? "Done" : "Undone"}
+              </button>
           </div>
-        ))
-      }
-     </React.Fragment>
-        )
+        )))
 
-      }
+     </React.Fragment>
+    )}
     </div>
   );
 }
