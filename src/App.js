@@ -1,4 +1,6 @@
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
+import Todo from "./components/Todo";
+import TodoForm from "./components/TodoForm";
 
 
 
@@ -8,16 +10,27 @@ function App() {
   const[isEdit, setIsEdit]= useState(false);
   const[willUpdateTodo,setWillUpdateTodo]=useState("");
 
+  useEffect(()=>{
+    const todosFromLocalStorage = localStorage.getItem("todos");
+    console.log(todosFromLocalStorage);
+    if(todosFromLocalStorage === null){
+      localStorage.setItem("todos",JSON.stringify([]))
+    }else{
+      setTodos(JSON.parse(todosFromLocalStorage));
+    }
+  },[])
+
   const deleteTodo = (id) => {
     console.log(id);
     const filteredTodos=todos.filter(item=>item.id !== id)
     setTodos(filteredTodos);
+    localStorage.setItem("todos",JSON.stringify(filteredTodos));
   
   };
 
 
 
-  const changeISDone =(id)=>{
+  const changeIsDone =(id)=>{
     console.log(id);
     const searchedTodo=todos.find((item)=>item.id ===id);
     const updatedTodo = {
@@ -28,8 +41,8 @@ function App() {
 
     console.log(filteredTodos);
     setTodos([...filteredTodos,updatedTodo]);
-
-  }
+    localStorage.setItem("todos", JSON.stringify([...filteredTodos,updatedTodo]))
+  };
   const handleSubmit=(event)=>{
     event.preventDefault();
     if(todoText===""){
@@ -51,7 +64,8 @@ function App() {
       text:todoText
     }
     const filteredTodos=todos.filter(item=>item.id !== willUpdateTodo)
-    setTodos([...filteredTodos,updatedTodo])
+    setTodos([...filteredTodos,updatedTodo]);
+    localStorage.setItem("todos",JSON.stringify([...filteredTodos,updatedTodo]))
     setTodoText("")
     setIsEdit(false)
     setWillUpdateTodo("")
@@ -63,7 +77,8 @@ function App() {
       date:new Date()
     }
     setTodos([...todos,newTodo]);
-  setTodoText("");
+    localStorage.setItem("todos",JSON.stringify([...todos,newTodo]))
+    setTodoText("");
   console.log(newTodo);
 
   }
@@ -74,22 +89,12 @@ function App() {
   return (
     <div className="container">
       <h1 className="text-center my-5">Todo App</h1>
-      <form onSubmit={handleSubmit}>
-        <div className= "input-group mb-3">
-      <input 
-         value ={todoText}
-         type="text" 
-         className="form-control" 
-         placeholder="Type your Todo" 
-         onChange={(event)=>setTodoText(event.target.value)}
-      />
-         <button className={`btn btn-${isEdit===true? "success":"primary"}`} 
-          type="submit"
-         >
-          {isEdit === true ? "Save" : "Add"}
-        </button>
-        </div>
-      </form>
+      <TodoForm 
+       handleSubmit={handleSubmit}
+       todoText = {todoText}
+       setTodoText = {setTodoText}
+       isEdit = {isEdit}
+       />
       {
         todos.length <=0 ? (
           <p className="text-centers my-5"> You don't have any todos yet</p>
@@ -98,31 +103,13 @@ function App() {
      <React.Fragment>
       {
         todos.map((item =>(
-          <div className={`alert alert-${
-            item.isDone===true?"success":"danger"} d-flex justify-content-between align-items-center`} role="alert" >
-            <p>{item.text}</p>
-            
-            <div>
-            <button className="btn btn-sm btn-danger" onClick={()=>deleteTodo(item.id)}>Delete</button>
-              <button className="btn btn-sm btn-secondary mx-2"
-              onClick={()=>{
-                setIsEdit(true)
-                setWillUpdateTodo(item.id);
-                setTodoText(item.text);
-              }}
-              >
-              Edit 
-              </button>
-           
-            <button 
-            className="btn btn-secondary btn-sm"
-            onClick={()=>changeISDone(item.id)} 
-
-            >
-              {item.isDone === false ? "Done" : "Undone"}
-              </button>
-              </div>
-          </div>
+          <Todo item={item} 
+          deleteTodo={deleteTodo} 
+          setIsEdit={setIsEdit} 
+          setWillUpdateTodo={setWillUpdateTodo} 
+          setTodoText={setTodoText} 
+          changeIsDone={changeIsDone}/>
+         
         )))
       }
      </React.Fragment>
