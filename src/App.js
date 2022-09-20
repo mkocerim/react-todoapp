@@ -4,7 +4,12 @@ import React,{useState} from "react";
 
 function App() {
   const [todoText, setTodoText]=useState("")
-  const[todos,setTodos]=useState([])
+  const[todos,setTodos]=useState([]);
+  const[isEdit, setIsEdit]= useState(false);
+  const editTodo=(id)=>{
+    console.log(id);
+    setIsEdit(true);
+  }
   const changeISDone =(id)=>{
     console.log(id);
     const searchedTodo=todos.find((item)=>item.id ===id);
@@ -15,7 +20,7 @@ function App() {
     const filteredTodos = todos.filter(item=>item.id !==id);
 
     console.log(filteredTodos);
-    setTodos([updatedTodo,...filteredTodos]);
+    setTodos([...filteredTodos,updatedTodo]);
 
   }
   const handleSubmit=(event)=>{
@@ -38,7 +43,7 @@ function App() {
     date:new Date()
   };
 
-  setTodos([newTodo,...todos]);
+  setTodos([...todos,newTodo]);
   setTodoText("");
   console.log(newTodo);
   };
@@ -68,14 +73,23 @@ function App() {
      <React.Fragment>
       {
         todos.map((item =>(
-          <div className="alert alert-secondary d-flex justify-content-between align-items-center" role="alert" >
+          <div className={`alert alert-${
+            item.isDone===true?"success":"danger"} d-flex justify-content-between align-items-center`} role="alert" >
             <p>{item.text}</p>
+            <div>
+              <button className="btn btn-sm btn-secondary mx-2"
+              onClick={()=>editTodo(item.id)}
+             
+              >Edit</button>
+           
             <button 
-            onClick={()=>changeISDone(item.id)} 
             className="btn btn-secondary btn-sm"
+            onClick={()=>changeISDone(item.id)} 
+
             >
               {item.isDone === false ? "Done" : "Undone"}
               </button>
+              </div>
           </div>
         )))
       }
