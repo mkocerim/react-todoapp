@@ -1,4 +1,6 @@
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
+import Todo from "./components/Todo";
+import TodoForm from "./components/TodoForm";
 
 
 
@@ -6,11 +8,29 @@ function App() {
   const [todoText, setTodoText]=useState("")
   const[todos,setTodos]=useState([]);
   const[isEdit, setIsEdit]= useState(false);
-  const editTodo=(id)=>{
+  const[willUpdateTodo,setWillUpdateTodo]=useState("");
+
+  useEffect(()=>{
+    const todosFromLocalStorage = localStorage.getItem("todos");
+    console.log(todosFromLocalStorage);
+    if(todosFromLocalStorage === null){
+      localStorage.setItem("todos",JSON.stringify([]))
+    }else{
+      setTodos(JSON.parse(todosFromLocalStorage));
+    }
+  },[])
+
+  const deleteTodo = (id) => {
     console.log(id);
-    setIsEdit(true);
-  }
-  const changeISDone =(id)=>{
+    const filteredTodos=todos.filter(item=>item.id !== id)
+    setTodos(filteredTodos);
+    localStorage.setItem("todos",JSON.stringify(filteredTodos));
+  
+  };
+
+
+
+  const changeIsDone =(id)=>{
     console.log(id);
     const searchedTodo=todos.find((item)=>item.id ===id);
     const updatedTodo = {
@@ -21,50 +41,60 @@ function App() {
 
     console.log(filteredTodos);
     setTodos([...filteredTodos,updatedTodo]);
-
-  }
+    localStorage.setItem("todos", JSON.stringify([...filteredTodos,updatedTodo]))
+  };
   const handleSubmit=(event)=>{
     event.preventDefault();
     if(todoText===""){
       alert("Todo text can't be empty!");
       return;
     }
-    console.log(todoText);
+  console.log(todoText);
   const hasTodos = todos.find(item=>item.text ===todoText)
   console.log(hasTodos);
   if(hasTodos !== undefined){
     alert("You have the todo already")
     return
   };
-  const newTodo = {
-    id:new Date().getTime(),
-    isDone:false,
-    text:todoText,
-    date:new Date()
-  };
-
-  setTodos([...todos,newTodo]);
-  setTodoText("");
+  if(isEdit===true){
+    console.log(willUpdateTodo, "todo'yu Güncelleyiniz");
+    const searchedTodo=todos.find(item=>item.id===willUpdateTodo)
+    const updatedTodo={
+      ...searchedTodo,
+      text:todoText
+    }
+    const filteredTodos=todos.filter(item=>item.id !== willUpdateTodo)
+    setTodos([...filteredTodos,updatedTodo]);
+    localStorage.setItem("todos",JSON.stringify([...filteredTodos,updatedTodo]))
+    setTodoText("")
+    setIsEdit(false)
+    setWillUpdateTodo("")
+  }else{
+    const newTodo = {
+      id:new Date().getTime(),
+      isDone:false,
+      text:todoText,
+      date:new Date()
+    }
+    setTodos([...todos,newTodo]);
+    localStorage.setItem("todos",JSON.stringify([...todos,newTodo]))
+    setTodoText("");
   console.log(newTodo);
+
+  }
+  
+
+  
   };
   return (
     <div className="container">
       <h1 className="text-center my-5">Todo App</h1>
-      <form onSubmit={handleSubmit}>
-        <div className= "input-group mb-3">
-      <input 
-         value ={todoText}
-         type="text" 
-         className="form-control" 
-         placeholder="Type your Todo" 
-         onChange={(event)=>setTodoText(event.target.value)}
-      />
-         <button className="btn btn-primary" type="submit"
-         >
-          ADD
-        </button>
-        </div>
-      </form>
+      <TodoForm 
+       handleSubmit={handleSubmit}
+       todoText = {todoText}
+       setTodoText = {setTodoText}
+       isEdit = {isEdit}
+       />
       {
         todos.length <=0 ? (
           <p className="text-centers my-5"> You don't have any todos yet</p>
@@ -73,24 +103,13 @@ function App() {
      <React.Fragment>
       {
         todos.map((item =>(
-          <div className={`alert alert-${
-            item.isDone===true?"success":"danger"} d-flex justify-content-between align-items-center`} role="alert" >
-            <p>{item.text}</p>
-            <div>
-              <button className="btn btn-sm btn-secondary mx-2"
-              onClick={()=>editTodo(item.id)}
-             
-              >Edit</button>
-           
-            <button 
-            className="btn btn-secondary btn-sm"
-            onClick={()=>changeISDone(item.id)} 
-
-            >
-              {item.isDone === false ? "Done" : "Undone"}
-              </button>
-              </div>
-          </div>
+          <Todo item={item} 
+          deleteTodo={deleteTodo} 
+          setIsEdit={setIsEdit} 
+          setWillUpdateTodo={setWillUpdateTodo} 
+          setTodoText={setTodoText} 
+          changeIsDone={changeIsDone}/>
+         
         )))
       }
      </React.Fragment>
