@@ -77,7 +77,7 @@ function App() {
         text: todoText,
         date: new Date(),
       };
-      setTodos([...todos, newTodo]);
+      setTodos([newTodo, ...todos]);
       localStorage.setItem("todos", JSON.stringify([...todos, newTodo]));
       setTodoText("");
       console.log(newTodo);
@@ -98,12 +98,14 @@ function App() {
         <React.Fragment>
           {todos.map((item) => (
             <Todo
+              key={item.id}
               item={item}
               deleteTodo={deleteTodo}
               setIsEdit={setIsEdit}
               setWillUpdateTodo={setWillUpdateTodo}
               setTodoText={setTodoText}
               changeIsDone={changeIsDone}
+              isEdit={isEdit}
             />
           ))}
         </React.Fragment>

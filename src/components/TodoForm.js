@@ -13,7 +13,9 @@ const TodoForm = (props) => {
           onChange={(event) => setTodoText(event.target.value)}
         />
         <button
-          className={`btn btn-${isEdit === true ? "success" : "primary"}`}
+          className={`btn btn-md btn-${
+            isEdit === true ? "success" : "primary"
+          }`}
           type="submit"
         >
           {isEdit === true ? "Save" : "Add"}

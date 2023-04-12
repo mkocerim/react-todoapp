@@ -9,11 +9,12 @@ const Todo = (props) => {
     setWillUpdateTodo,
     setIsEdit,
     changeIsDone,
+    isEdit,
   } = props; //tüm itemleri  props.item yazmak yerine burada const{item,xxx} =props; yazarak yıkıma ugratıyoruz
   return (
     <div
       className={`alert alert-${
-        props.item.isDone === true ? "success" : "danger"
+        props.item.isDone ? "success" : "danger"
       } d-flex justify-content-between align-items-center`}
       role="alert"
     >
@@ -27,10 +28,12 @@ const Todo = (props) => {
           Delete
         </button>
         <button
-          className="btn btn-sm btn-secondary mx-2"
+          className={`btn btn-sm btn-${
+            isEdit === true ? "danger" : "success"
+          } mx-2`}
           onClick={() => {
             setIsEdit(true);
-            setWillUpdateTodo(props.item.id);
+            setWillUpdateTodo(item.id);
             setTodoText(item.text);
           }}
         >
@@ -38,10 +41,13 @@ const Todo = (props) => {
         </button>
 
         <button
-          className="btn btn-secondary btn-sm"
-          onClick={() => changeIsDone(item.id)}
+          className={`btn btn-${props.item.isDone ? "info" : "warning"} btn-sm`}
+          onClick={() => {
+            changeIsDone(item.id);
+            setIsEdit(false);
+          }}
         >
-          {props.item.isDone === false ? "Done" : "Undone"}
+          {props.item.isDone ? "Done" : "Undone"}
         </button>
       </div>
     </div>
